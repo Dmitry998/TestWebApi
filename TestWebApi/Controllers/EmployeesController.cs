@@ -28,9 +28,13 @@ namespace TestWebApi.Controllers
             //var players = db.Players.Include(p => p.Team); это не от сюда даже
 
 
-            //var employees = db.Employees.Include(e => e.Company);
-            //return Ok(employees);
-            return await db.Employees.ToListAsync();
+            var employees = await db.Employees
+                .Include(e => e.Passports)
+                .ToListAsync();
+            return Ok(employees);
+
+
+            //return await db.Employees.ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -38,19 +42,51 @@ namespace TestWebApi.Controllers
         {
             //Employee employee = await db.Employees.FirstOrDefaultAsync(x => x.Id == id);
             //if (employee == null)
-            // return NotFound();
+            //    return NotFound();
+
+
+            //Passport passport = await db.Passports.Include(p => p.Employee).FirstOrDefaultAsync(x => x.Id == id);
+            //if (passport == null)
+            //    return NotFound();
+            //return new ObjectResult(passport);
+
+            //List<Passport> passportsThisEmployeeId = new List<Passport>();
+
+            //foreach(var p in await db.Passports.Include(p => p.Employee.Company).ToListAsync())
+            //{
+            //    if (p.EmployeeId == id)
+            //        passportsThisEmployeeId.Add(p);
+            //}
+            //if (passportsThisEmployeeId.Count == 0)
+            //    return NotFound();
+            //return Ok(passportsThisEmployeeId);
 
 
             List<Employee> employeesThisCompany = new List<Employee>();
-            foreach (Employee em in await db.Employees.ToListAsync())
+            foreach (Employee em in await db.Employees
+                .Include(e => e.Passports)
+                .ToListAsync())
             {
                 if (em.CompanyId == id)
                     employeesThisCompany.Add(em);
-
             }
             if (employeesThisCompany.Count == 0)
                 return NotFound();
             return Ok(employeesThisCompany);
+        }
+
+
+        [HttpPost]
+        public async Task<ActionResult<Employee>> AddEmpolyee(Employee employee)
+        {
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
+
+            db.Employees.Add(employee);
+            await db.SaveChangesAsync();
+            return Ok(employee);
         }
 
         //[HttpGet("{id}")]
