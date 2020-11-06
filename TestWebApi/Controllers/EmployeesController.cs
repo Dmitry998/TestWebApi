@@ -57,6 +57,9 @@ namespace TestWebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Employee>> AddEmpolyee(Employee employee)
         {
+            if (employee == null)
+                return BadRequest();
+
             db.Employees.Add(employee);
             await db.SaveChangesAsync();
             return Ok(employee.Id); // возвращаем id добавленного пользователя
@@ -88,7 +91,17 @@ namespace TestWebApi.Controllers
                 return NotFound();
             }
 
-            //Employee employeeInDb = db.Employees.FirstOrDefault(e => e.Id == employee.Id);
+            Employee employeeInDb = db.Employees.FirstOrDefault(e => e.Id == employee.Id);
+
+            if (employee.Name == null)
+                employee.Name = employeeInDb.Name;
+            if (employee.Surname == null)
+                employee.Surname = employeeInDb.Surname;
+            if (employee.Phone == null)
+                employee.Phone = employeeInDb.Phone;
+            if (employee.CompanyId == null)
+                employee.CompanyId = employeeInDb.CompanyId;
+
             db.Update(employee);
             await db.SaveChangesAsync();
             return Ok(employee);

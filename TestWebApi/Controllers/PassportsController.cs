@@ -34,7 +34,7 @@ namespace TestWebApi.Controllers
                 .Include(e => e.Passports)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
-            if(thisEmployee == null)
+            if (thisEmployee == null)
                 return NotFound();
 
             List<Passport> passportsThisEmployee = thisEmployee.Passports.ToList();
@@ -64,5 +64,24 @@ namespace TestWebApi.Controllers
             await db.SaveChangesAsync();
             return Ok(passport); // возвращаем удаленный паспорт.
         }
+
+        [HttpPut]
+        public async Task<ActionResult<Passport>> ChangePassport(int id, Passport passport)
+        {
+            if (passport == null)
+            {
+                return BadRequest();
+            }
+
+            if (!db.Passports.Any(p => p.Id == passport.Id))
+            {
+                return NotFound();
+            }
+
+            db.Update(passport);
+            await db.SaveChangesAsync();
+            return Ok(passport);
+        }
+
     }
 }
