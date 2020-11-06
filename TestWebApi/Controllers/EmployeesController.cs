@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.JsonPatch;
 using TestWebApi.Models;
 
 namespace TestWebApi.Controllers
@@ -25,9 +26,6 @@ namespace TestWebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Employee>>> GetAllEmployees()
         {
-            //var players = db.Players.Include(p => p.Team); это не от сюда даже
-
-
             var employees = await db.Employees
                 .Include(e => e.Passports)
                 .ToListAsync();
@@ -78,6 +76,19 @@ namespace TestWebApi.Controllers
             return Ok(employee.Id); // возвращаем id удаленного пользователя.
         }
 
+        [HttpPatch("{id:int}")]
+        public async Task<ActionResult<Employee>> ChangeThisEmployee(int id, [FromBody] JsonPatchDocument<Employee> patch)
+        {
+            var employee = await db.Employees
+                .Include(e => e.Passports)
+                .FirstOrDefaultAsync(e => e.Id == id);
+            if (employee == null)
+                return NotFound();
+            patch.ApplyTo(employee, ModelState);
+            await db.SaveChangesAsync();
+            return Ok(employee);
+        }
+
         [HttpPut]
         public async Task<ActionResult<Employee>> Put(Employee employee)
         {
@@ -90,17 +101,6 @@ namespace TestWebApi.Controllers
             {
                 return NotFound();
             }
-
-            Employee employeeInDb = db.Employees.FirstOrDefault(e => e.Id == employee.Id);
-
-            if (employee.Name == null)
-                employee.Name = employeeInDb.Name;
-            if (employee.Surname == null)
-                employee.Surname = employeeInDb.Surname;
-            if (employee.Phone == null)
-                employee.Phone = employeeInDb.Phone;
-            if (employee.CompanyId == null)
-                employee.CompanyId = employeeInDb.CompanyId;
 
             db.Update(employee);
             await db.SaveChangesAsync();

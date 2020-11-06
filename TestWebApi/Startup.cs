@@ -21,7 +21,7 @@ namespace TestWebApi
             // устанавливаем контекст данных
             services.AddDbContext<EmployeesContext>(options => options.UseSqlServer(con));
 
-            services.AddControllers(); // используем контроллеры без представлений
+            services.AddControllers().AddNewtonsoftJson();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
