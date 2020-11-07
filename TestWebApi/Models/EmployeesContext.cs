@@ -10,6 +10,8 @@ namespace TestWebApi.Models
     {
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Company> Companies { get; set; }
+
+        public DbSet<Passport> Passports { get; set; }
         public EmployeesContext(DbContextOptions<EmployeesContext> options)
             : base(options)
         {
