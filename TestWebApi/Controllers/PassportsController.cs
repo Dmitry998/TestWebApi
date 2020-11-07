@@ -67,7 +67,7 @@ namespace TestWebApi.Controllers
         }
 
         [HttpPatch("{id:int}")]
-        public async Task<ActionResult<Passport>> ChangePassport(int id, [FromBody] JsonPatchDocument<Passport> patch)
+        public async Task<ActionResult<Passport>> ChangeThisPassport(int id, [FromBody] JsonPatchDocument<Passport> patch)
         {
             var passport = await db.Passports.FirstOrDefaultAsync(p => p.Id == id);
             if (passport == null)
@@ -77,22 +77,22 @@ namespace TestWebApi.Controllers
             return Ok(passport);
         }
 
-        //[HttpPut]
-        //public async Task<ActionResult<Passport>> ChangePassport(Passport passport)
-        //{
-        //    if (passport == null)
-        //    {
-        //        return BadRequest();
-        //    }
+        [HttpPut]
+        public async Task<ActionResult<Passport>> ChangePassportTotally(Passport passport)
+        {
+            if (passport == null)
+            {
+                return BadRequest();
+            }
 
-        //    if (!db.Passports.Any(p => p.Id == passport.Id))
-        //    {
-        //        return NotFound();
-        //    }
+            if (!db.Passports.Any(p => p.Id == passport.Id))
+            {
+                return NotFound();
+            }
 
-        //    db.Update(passport);
-        //    await db.SaveChangesAsync();
-        //    return Ok(passport);
-        //}
+            db.Update(passport);
+            await db.SaveChangesAsync();
+            return Ok(passport);
+        }
     }
 }

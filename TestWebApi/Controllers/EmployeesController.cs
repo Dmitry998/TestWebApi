@@ -33,22 +33,16 @@ namespace TestWebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Employee>> GetEmployeesThisCompany(int id)
+        public async Task<ActionResult<Employee>> GetThisEmployee(int id) // Получить сотрудника по id
         {
-            Company thisCompany = await db.Companies.FirstOrDefaultAsync(c => c.Id == id);
+            Employee thisEmployee = await db.Employees
+                .Include(e => e.Passports)
+                .FirstOrDefaultAsync(e => e.Id == id);
 
-            if (thisCompany == null)
+            if (thisEmployee == null)
                 return NotFound();
 
-            List<Employee> employeesThisCompany = new List<Employee>();
-            foreach (Employee em in await db.Employees
-                .Include(e => e.Passports)
-                .ToListAsync())
-            {
-                if (em.CompanyId == id)
-                    employeesThisCompany.Add(em);
-            }
-            return Ok(employeesThisCompany);
+            return Ok(thisEmployee);
         }
 
 
@@ -90,7 +84,7 @@ namespace TestWebApi.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<Employee>> Put(Employee employee)
+        public async Task<ActionResult<Employee>> ChangeEmployeeTotaly(Employee employee)
         {
             if (employee == null)
             {
