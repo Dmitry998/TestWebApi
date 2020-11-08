@@ -45,12 +45,12 @@ namespace TestWebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Employee>> AddPasport(Passport passport)
         {
-            if (!db.Employees.Any(e => e.Id == passport.EmployeeId)) // Если нет сотрудника с таким id
+            if (passport == null)
                 return BadRequest();
 
             db.Passports.Add(passport);
             await db.SaveChangesAsync();
-            return Ok(passport); // возвращаем добавленный паспорт
+            return Ok(passport);
         }
 
         [HttpDelete("{id}")]
@@ -63,7 +63,7 @@ namespace TestWebApi.Controllers
             }
             db.Passports.Remove(passport);
             await db.SaveChangesAsync();
-            return Ok(passport); // возвращаем удаленный паспорт.
+            return Ok(passport);
         }
 
         [HttpPatch("{id:int}")]

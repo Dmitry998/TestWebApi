@@ -49,7 +49,7 @@ namespace TestWebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Company>> AddCompany(Company company)
         {
-            if (!db.Companies.Any(c => c.Id == company.Id))
+            if (company == null)
                 return BadRequest();
 
             db.Companies.Add(company);
@@ -62,9 +62,8 @@ namespace TestWebApi.Controllers
         {
             Company company = db.Companies.FirstOrDefault(c => c.Id == id);
             if (company == null)
-            {
                 return NotFound();
-            }
+
             db.Companies.Remove(company);
             await db.SaveChangesAsync();
             return Ok(company.Id);
